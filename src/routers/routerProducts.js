@@ -2,14 +2,15 @@ import { Router } from "express";
 import { productosGetController } from "../controllers/api/productsGetController.js";
 import { productosPostController } from "../controllers/api/productsPostController.js";
 import { productManager } from "../dao/productManager.js";
-import { autenticacion } from "../middlewares/autenticacion.js";
+import { autenticacionRedirect } from "../middlewares/autenticacion.js";
+import { Administrador, Usuario } from "../middlewares/autorizacion.js";
 
 export const routerProducts = Router();
 
-routerProducts.post("/", autenticacion, productosPostController);
-routerProducts.get("/", productosGetController)
+routerProducts.post("/", autenticacionRedirect, Administrador, productosPostController);
+routerProducts.get("/", Usuario, productosGetController)
 
-routerProducts.put("/:code", async (req,res,next) => {
+routerProducts.put("/:code", Administrador, async (req,res,next) => {
         try{
             const cambio = req.body
             const codigoProducto = req.params.code;
@@ -21,7 +22,7 @@ routerProducts.put("/:code", async (req,res,next) => {
         }
 })
 
-routerProducts.delete("/:code", async (req,res,next) => {
+routerProducts.delete("/:code", Administrador, async (req,res,next) => {
     try {
         const codigoProducto = req.params.code;
         const producto = productManager.borrarUnoConCódigo(codigoProducto)

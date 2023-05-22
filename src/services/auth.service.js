@@ -1,29 +1,26 @@
+import { userManager } from "../dao/usersManager.js"
 import { criptografiador } from "../utils/criptografia.js"
-import { usersManager } from "../dao/usersManager.js"
 
 class AuthenticationService {
-    constructor({ usersManager,criptografiador }) {
-        this.usersManager = usersManager
+    constructor({ userManager,criptografiador }) {
+        this.userManager = userManager
         this.criptografiador = criptografiador
     }
-    async login({username,password}) {
-        let user
+    async login(email,password) {
         try {
-            user = await this.usersManager.obtenerSegunCampo({campo: "username",valor: username})
+            const user = await userManager.encontrarUnoConValor({email})
+            const compare = criptografiador.comparar(password, user.password)
+            if(!compare){throw new Error("error de autenticacion")}
+            criptografiador.generarToken(user)
+            return user
         } catch (error) {
             throw new Error("error de autenticacion")
         }
-
-        if (!this.criptografiador.comparar(password, user.password)) {
-            throw new Error("error de autenticacion")
-        }
-
-        const token = this.criptografiador.generarToken(user)
-        return token
+        
     }
 }
 
 export const authenticationService = new AuthenticationService({
-    usersManager: usersManager,
-    criprografiador: criptografiador
+    userManager: userManager,
+    criptografiador: criptografiador
 })

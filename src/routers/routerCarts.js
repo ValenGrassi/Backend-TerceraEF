@@ -3,13 +3,16 @@ import { cartGetController } from "../controllers/api/cartGetController.js";
 import { cartPostController } from "../controllers/api/cartPostController.js";
 import { cartManager } from "../dao/cartManager.js";
 import  {productManager}  from "../dao/productManager.js";
+import { Usuario } from "../middlewares/autorizacion.js";
 import { DatosFuturoCarrito } from "../models/DatosFuturoCarrito.js";
+import { Ticket } from "../models/Ticket.js";
+import { emailService } from "../services/email.service.js";
 
 
 export const routerCarts = Router();
-routerCarts.post("/", cartPostController);
+routerCarts.post("/", Usuario,cartPostController);
 
-routerCarts.get("/", cartGetController)
+routerCarts.get("/",Usuario, cartGetController)
 
 routerCarts.get("/:cid", async (req,res,next) => {
     try {
@@ -21,7 +24,7 @@ routerCarts.get("/:cid", async (req,res,next) => {
     }
 })
 
-routerCarts.post("/:cid/product/:pid", async(req,res,next) => {
+routerCarts.post("/:cid/product/:pid", Usuario, async(req,res,next) => {
     try {
         const idProducto = req.params.pid;
         const idCarrito = req.params.cid;
@@ -41,7 +44,7 @@ routerCarts.post("/:cid/product/:pid", async(req,res,next) => {
     }
 })
 
-routerCarts.delete("/:cid/product/:pid", async(req,res,next) => {
+routerCarts.delete("/:cid/product/:pid", Usuario, async(req,res,next) => {
     try {
         const idProducto = req.params.pid;
         const idCarrito = req.params.cid;
@@ -49,6 +52,26 @@ routerCarts.delete("/:cid/product/:pid", async(req,res,next) => {
         const encontrar = carrito.products.find(p => p.product == idProducto)
         console.log(encontrar)
         const carritoNuevo = await cartManager.actualizarUnoPull(idCarrito, encontrar)
+        res.status(201).json(carritoNuevo)
+    } catch (error) {
+        next(error)
+    }
+})
+
+routerCarts.put("/:cid/purchase", Usuario, async(req,res,next) => {
+    try {
+        const idCarrito = req.params.cid;
+        const carrito = await cartManager.encontrarUnoConId(idCarrito)
+        console.log("carrito comprado " + carrito)
+        const nuevo = []
+        const carritoNuevo = await cartManager.actualizarUnoPull(idCarrito, nuevo)
+        if(carritoNuevo){
+            new Ticket({amount:nuevo,purchaser:req.session.user.email})
+        }
+        
+        const info = await emailService.send(req.session.user.email, mensaje)
+        console.log(info)
+        
         res.status(201).json(carritoNuevo)
     } catch (error) {
         next(error)

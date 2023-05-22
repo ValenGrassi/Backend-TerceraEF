@@ -1,7 +1,7 @@
 import { Schema } from "mongoose"
 import { ManagerMongoose } from "./ManagerMongoose.js"
 
-export const cartManager = new ManagerMongoose("carts", {
+const cartSchema = new Schema({
     products: {
         type: [
             {
@@ -14,3 +14,5 @@ export const cartManager = new ManagerMongoose("carts", {
         default: []
     },
 })
+
+export const cartManager = new ManagerMongoose("carts", cartSchema)

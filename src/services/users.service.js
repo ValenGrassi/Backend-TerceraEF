@@ -1,9 +1,10 @@
-import { usersManager } from "../dao/usersManager.js";
+import { userRepository } from "../repositories/usersRepository.js";
 
 class UsuariosService{
     async registrar(datosFuturoUsuario){
-        const usuarioRegistrado = await usersManager.guardar(datosFuturoUsuario);
-        return usuarioRegistrado;
+    const usuarioRegistrado = await userRepository.guardar(datosFuturoUsuario);
+    console.log(usuarioRegistrado)
+    return usuarioRegistrado;
     }
 }
 

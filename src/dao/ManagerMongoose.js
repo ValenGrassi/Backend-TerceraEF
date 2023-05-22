@@ -12,6 +12,10 @@ export class ManagerMongoose {
     async encontrar(){
         return await this.collection.find().lean()
     }
+
+    async encontrarUnoConValor(criterio){
+        return await this.collection.findOne(criterio).lean()
+    }
     
     async encontrarUnoConId(id){
         return await this.collection.findById(id)

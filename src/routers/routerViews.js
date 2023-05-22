@@ -1,6 +1,6 @@
 import {Router} from "express"
 import { productManager } from "../dao/productManager.js";
-import { autenticacionRedirect } from "../middlewares/autenticacion.js";
+import { autenticacionLogin, autenticacionRedirect } from "../middlewares/autenticacion.js";
 
 const routerViews = Router()
 
@@ -16,9 +16,8 @@ routerViews.get("/", autenticacionRedirect, (req,res,next) => {
     res.redirect("/user")
 })
 
-routerViews.get("/user",autenticacionRedirect, (req,res,next) => {
+routerViews.get("/user",autenticacionLogin, (req,res,next) => {
     res.render("user", {pageTitle: "User", user: req.session.user})
-    console.log(req.session.user)
 })
 
 routerViews.get("/realtimeproducts", async (req,res) => {

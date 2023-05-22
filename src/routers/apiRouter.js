@@ -5,6 +5,7 @@ import { routerCarts } from "./routerCarts.js";
 import { routerProducts } from "./routerProducts.js"
 import { routerUsers } from "./routerUsers.js";
 import routerSessions from "./routerSessions.js";
+import { routerCurrent } from "./routerCurrent.js";
 
 
 export const apiRouter = Router();
@@ -17,5 +18,7 @@ apiRouter.use("/products", routerProducts)
 apiRouter.use("/carts", routerCarts)
 apiRouter.use("/users", routerUsers)
 apiRouter.use("/sessions", routerSessions)
+apiRouter.use("/current", routerCurrent)
+
 
 apiRouter.use(errorHandler);
